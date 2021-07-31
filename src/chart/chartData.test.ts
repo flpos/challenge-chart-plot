@@ -1,5 +1,19 @@
-import { DataEvent, SpanEvent, StartEvent } from '../event/Event';
-import { ChartData, ChartLimits, getChartData, processSpan } from './chartData';
+import { DataValidationError } from '../errors/DataValidationError';
+import { SerieValidationError } from '../errors/SerieValidationError';
+import {
+  DataEvent,
+  Event,
+  SpanEvent,
+  StartEvent,
+  StopEvent,
+} from '../event/Event';
+import {
+  ChartData,
+  ChartLimits,
+  getChartData,
+  processEvents,
+  processSpan,
+} from './chartData';
 
 describe('chartData functions', () => {
   it('gets the min and max values', () => {
@@ -59,6 +73,63 @@ describe('chartData functions', () => {
 
     const result = getChartData(startEvent, dataEvents);
     expectArrayEquivalence<ChartData>(result, expected);
+  });
+
+  describe('data generation', () => {
+    it('must have start and stop events', () => {
+      const startEvent: Event = {
+        type: 'start',
+        timestamp: 1,
+      };
+      const stopEvent: Event = {
+        type: 'stop',
+        timestamp: 4,
+      };
+      expect(() => processEvents([startEvent])).toThrow(SerieValidationError);
+      expect(() => processEvents([stopEvent])).toThrow(SerieValidationError);
+    });
+
+    it('expects that start comes before stop (timestamp based)', () => {
+      const startEvent: Event = {
+        type: 'start',
+        timestamp: 5,
+      };
+      const stopEvent: Event = {
+        type: 'stop',
+        timestamp: 4,
+      };
+      expect(() => {
+        processEvents([startEvent, stopEvent]);
+      }).toThrow(SerieValidationError);
+    });
+
+    it('expect data has the fields defined in StartEvent', () => {
+      const startEvent: StartEvent = {
+        type: 'start',
+        timestamp: 1,
+        group: ['os'],
+        select: ['browser'],
+      };
+
+      const stopEvent: StopEvent = {
+        type: 'stop',
+        timestamp: 4,
+      };
+
+      let event: DataEvent = {
+        type: 'data',
+        timestamp: 3,
+      };
+
+      expect(() => {
+        processEvents([startEvent, event, stopEvent]);
+      }).toThrow(DataValidationError);
+
+      event['os'] = 'windows';
+      expect(() => {
+        processEvents([startEvent, event, stopEvent]);
+      }).toThrow(DataValidationError);
+    });
   });
 });
 

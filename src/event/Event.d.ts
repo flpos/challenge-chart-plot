@@ -2,6 +2,7 @@
  * The basic data, common to all events.
  */
 export interface Event {
+  type: 'start' | 'span' | 'data' | 'stop';
   timestamp: number;
 }
 

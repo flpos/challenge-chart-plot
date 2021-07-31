@@ -1,4 +1,6 @@
-import { DataEvent, SpanEvent, StartEvent } from '../event/Event';
+import { DataValidationError } from '../errors/DataValidationError';
+import { SerieValidationError } from '../errors/SerieValidationError';
+import { DataEvent, Event, SpanEvent, StartEvent } from '../event/Event';
 import { parseSnakeCase } from '../utils/parseSnakeCase';
 
 export type ChartData = {
@@ -20,7 +22,10 @@ export type ChartLimits = {
  * @param event The span event
  * @returns the object tha will be used on the chartLib.
  */
-export const processSpan = (event: SpanEvent): ChartLimits => {
+export const processSpan = (event?: SpanEvent): ChartLimits => {
+  if (!event) {
+    return { type: 'linear', min: 'auto', max: 'auto' };
+  }
   return { type: 'linear', min: event.begin, max: event.end };
 };
 
@@ -42,7 +47,7 @@ export const getChartData = (
     const groups = startEvent.group.map((groupName) => {
       const group = event[groupName];
       if (!group) {
-        throw new Error('All data must have the defined groups');
+        throw new DataValidationError('All data must have the defined groups');
       } else {
         return group;
       }
@@ -60,11 +65,35 @@ export const getChartData = (
         };
       }
       if (!event[field]) {
-        throw new Error('All data must have the selected fields');
+        throw new DataValidationError('All data must have the selected fields');
       }
       series[sid].data.push({ x: event.timestamp, y: event[field] });
     }
   }
 
   return Object.values(series);
+};
+
+export const processEvents = (events: Array<Event>) => {
+  const startEvent = events.find((e) => e.type === 'start');
+  const stopEvent = events.find((e) => e.type === 'stop');
+  const spanEvent = events.find((e) => e.type === 'span');
+
+  if (!startEvent || !stopEvent) {
+    throw new SerieValidationError('Missing start or stop event');
+  }
+
+  if (stopEvent.timestamp < startEvent.timestamp) {
+    throw new SerieValidationError(
+      "Start event's timestamp smaller than stop event's timestamp"
+    );
+  }
+
+  const chartLimits = processSpan(spanEvent as SpanEvent);
+  const chartData = getChartData(
+    startEvent as StartEvent,
+    events.filter((e) => e.type === 'data') as Array<DataEvent>
+  );
+
+  return { chartLimits, chartData };
 };
