@@ -7,7 +7,6 @@ import {
   StartEvent,
   StopEvent,
 } from '../event/Event';
-import { expectArrayEquivalence } from '../utils/test/expectArrayEquivalence';
 import {
   ChartData,
   ChartLimits,
@@ -73,7 +72,7 @@ describe('chartData functions', () => {
     ];
 
     const result = getChartData(startEvent, dataEvents);
-    expectArrayEquivalence<ChartData>(result, expected);
+    expect(result).toEqual(expected);
   });
 
   describe('data generation', () => {
