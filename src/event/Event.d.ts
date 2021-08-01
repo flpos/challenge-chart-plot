@@ -10,7 +10,7 @@ export interface Event {
  * Describes the start of a serie of data
  * @example
  * {
- *  type 'start',
+ *  type: 'start',
  *  timestamp: 1519780251293,
  *  select: [
  *      'min_response_time',
