@@ -1,10 +1,13 @@
 import React from 'react';
+import AlignCenter from '../common/AlignCenter';
 import { HeaderWrapper } from './styles';
 
 const Header = () => {
   return (
     <HeaderWrapper>
-      <h1>Felipe's Challenge</h1>
+      <AlignCenter>
+        <h1>Felipe's Challenge</h1>
+      </AlignCenter>
     </HeaderWrapper>
   );
 };
