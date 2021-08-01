@@ -1,10 +1,11 @@
 import React from 'react';
+import { HeaderWrapper } from './styles';
 
 const Header = () => {
   return (
-    <div>
-      <h1>Felipe's Challenge</h1>;
-    </div>
+    <HeaderWrapper>
+      <h1>Felipe's Challenge</h1>
+    </HeaderWrapper>
   );
 };
 
