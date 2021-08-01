@@ -1,4 +1,6 @@
 import React from 'react';
+import AlignCenter from '../common/AlignCenter';
+import { Button, FooterWrapper } from './styles';
 
 type FooterProps = {
   plotChart: () => void;
@@ -6,9 +8,11 @@ type FooterProps = {
 
 const Footer: React.FC<FooterProps> = ({ plotChart }) => {
   return (
-    <div>
-      <button onClick={plotChart}>generate chart</button>
-    </div>
+    <FooterWrapper>
+      <AlignCenter>
+        <Button onClick={plotChart}>generate chart</Button>
+      </AlignCenter>
+    </FooterWrapper>
   );
 };
 
