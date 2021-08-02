@@ -3,10 +3,14 @@ import styled from 'styled-components';
 type AppWrapperProps = {
   inputAreaHeight?: number;
 };
+
+const getInputHeight = ({ inputAreaHeight = 200 }: AppWrapperProps) => {
+  return `${inputAreaHeight}px`;
+};
+
 export const AppWrapper = styled.div<AppWrapperProps>`
   display: grid;
-  grid-template-rows: 64px 1fr auto 64px;
-  grid-template-areas: 'header', 'input', 'plot', 'footer';
+  grid-template-rows: 64px ${getInputHeight} 4px auto 64px;
 
   height: 100vh;
 `;
