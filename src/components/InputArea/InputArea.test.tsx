@@ -1,17 +1,16 @@
-import { fireEvent, render, screen } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { render } from '@testing-library/react';
 import InputArea from '.';
+import createRange from '../../utils/test/createRange';
 
 describe('InputArea component', () => {
   it('calls onChange on change', () => {
+    createRange();
     const onChange = jest.fn();
 
-    render(<InputArea onChange={onChange} />);
-    const inputArea = screen.getByLabelText('data-input');
-
-    act(() => {
-      fireEvent.change(inputArea, { target: { value: 'test' } });
-    });
+    // changed fireEvent to value passing
+    // because codemirror does not handles changing
+    // the textarea well.
+    render(<InputArea value='test' onChange={onChange} />);
 
     expect(onChange).toBeCalledWith('test');
   });
