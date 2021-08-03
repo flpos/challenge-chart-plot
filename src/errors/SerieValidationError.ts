@@ -1,5 +1,1 @@
-export class SerieValidationError extends Error {
-  constructor(message?: string) {
-    super(message);
-  }
-}
+export class SerieValidationError extends Error {}
