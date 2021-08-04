@@ -82,8 +82,8 @@ export const processEvents = (events: Array<Event>) => {
     events.filter((e) => {
       return (
         e.type === 'data' &&
-        e.timestamp > spanEvent.begin &&
-        e.timestamp < spanEvent.end
+        e.timestamp >= spanEvent.begin &&
+        e.timestamp <= spanEvent.end
       );
     }) as Array<DataEvent>
   );
