@@ -1,0 +1,8 @@
+{
+  "short_name": "Felipe's Chart Plot",
+  "name": "Chart plotting application",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
