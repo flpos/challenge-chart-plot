@@ -2,8 +2,8 @@ import React from 'react';
 import { DragHandleDecorator, DragHandleDiv } from './styles';
 
 type DragHandleProps = {
-  inputHeight: number;
-  setInputHeight: React.Dispatch<React.SetStateAction<number>>;
+  inputHeight: () => number;
+  setInputHeight: (cb: (prev: number) => number) => void;
 };
 
 const DragHandle: React.FC<DragHandleProps> = ({
@@ -18,7 +18,7 @@ const DragHandle: React.FC<DragHandleProps> = ({
       draggable='true'
       onDragStart={(event) => {
         initDragRef.current = event.pageY;
-        initHeightRef.current = inputHeight;
+        initHeightRef.current = inputHeight();
         event.dataTransfer.setDragImage(new Image(), 0, 0);
       }}
       onDrag={(event) => {

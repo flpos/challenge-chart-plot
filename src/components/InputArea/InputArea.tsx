@@ -6,6 +6,7 @@ import styled from 'styled-components';
 type InputAreaProps = {
   value?: string;
   onChange: (text: string) => void;
+  inputAreaRef: React.RefObject<HTMLDivElement>;
 };
 
 const Wrapper = styled.div`
@@ -14,9 +15,13 @@ const Wrapper = styled.div`
   }
 `;
 
-const InputArea: React.FC<InputAreaProps> = ({ value, onChange }) => {
+const InputArea: React.FC<InputAreaProps> = ({
+  value,
+  onChange,
+  inputAreaRef,
+}) => {
   return (
-    <Wrapper>
+    <Wrapper className='code' ref={inputAreaRef}>
       <CodeMirror
         options={{
           theme: 'monokai',
