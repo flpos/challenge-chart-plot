@@ -1,6 +1,12 @@
 import { DataValidationError } from '../errors/DataValidationError';
 import { SerieValidationError } from '../errors/SerieValidationError';
-import { DataEvent, Event, SpanEvent, StartEvent } from '../event/Event';
+import {
+  DataEvent,
+  Event,
+  SpanEvent,
+  StartEvent,
+  StopEvent,
+} from '../event/Event';
 import { parseSnakeCase } from '../utils/parseSnakeCase';
 
 export type ChartData = {
@@ -9,24 +15,6 @@ export type ChartData = {
     x: number | string | Date;
     y: number | string | Date;
   }>;
-};
-
-export type ChartLimits = {
-  type: 'linear';
-  min: number | 'auto';
-  max: number | 'auto';
-};
-
-/**
- * Receive an event, transforms it to the axis definition.
- * @param event The span event
- * @returns the object tha will be used on the chartLib.
- */
-export const processSpan = (event?: SpanEvent): ChartLimits => {
-  if (!event) {
-    return { type: 'linear', min: 'auto', max: 'auto' };
-  }
-  return { type: 'linear', min: event.begin, max: event.end };
 };
 
 /**
@@ -75,9 +63,9 @@ export const getChartData = (
 };
 
 export const processEvents = (events: Array<Event>) => {
-  const startEvent = events.find((e) => e.type === 'start');
-  const stopEvent = events.find((e) => e.type === 'stop');
-  const spanEvent = events.find((e) => e.type === 'span');
+  const startEvent = events.find((e) => e.type === 'start') as StartEvent;
+  const stopEvent = events.find((e) => e.type === 'stop') as StopEvent;
+  const spanEvent = events.find((e) => e.type === 'span') as SpanEvent;
 
   if (!startEvent || !stopEvent) {
     throw new SerieValidationError('Missing start or stop event');
@@ -89,11 +77,16 @@ export const processEvents = (events: Array<Event>) => {
     );
   }
 
-  const chartLimits = processSpan(spanEvent as SpanEvent);
   const chartData = getChartData(
-    startEvent as StartEvent,
-    events.filter((e) => e.type === 'data') as Array<DataEvent>
+    startEvent,
+    events.filter((e) => {
+      return (
+        e.type === 'data' &&
+        e.timestamp > spanEvent.begin &&
+        e.timestamp < spanEvent.end
+      );
+    }) as Array<DataEvent>
   );
 
-  return { chartLimits, chartData };
+  return { chartData };
 };

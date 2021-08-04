@@ -1,46 +1,9 @@
 import { DataValidationError } from '../errors/DataValidationError';
 import { SerieValidationError } from '../errors/SerieValidationError';
-import {
-  DataEvent,
-  Event,
-  SpanEvent,
-  StartEvent,
-  StopEvent,
-} from '../event/Event';
-import {
-  ChartData,
-  ChartLimits,
-  getChartData,
-  processEvents,
-  processSpan,
-} from './chartData';
+import { DataEvent, Event, StartEvent, StopEvent } from '../event/Event';
+import { ChartData, getChartData, processEvents } from './chartData';
 
 describe('chartData functions', () => {
-  it('gets the min and max values', () => {
-    const input: SpanEvent = {
-      type: 'span',
-      begin: 123,
-      end: 456,
-      timestamp: 789,
-    };
-    const expected: ChartLimits = {
-      type: 'linear',
-      min: 123,
-      max: 456,
-    };
-    const noSpanExpected: ChartLimits = {
-      type: 'linear',
-      min: 'auto',
-      max: 'auto',
-    };
-
-    const result = processSpan(input);
-    expect(result).toEqual(expected);
-
-    const noSpanResult = processSpan();
-    expect(noSpanResult).toEqual(noSpanExpected);
-  });
-
   it('generates the series', () => {
     const startEvent: StartEvent = {
       type: 'start',
